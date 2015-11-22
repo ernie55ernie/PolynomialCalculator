@@ -47,7 +47,7 @@ public:
 				int c = (coef == 0 && pos) ? 1 : 
 					(coef == 0 && !pos ? -1: 
 					(pos? coef : -coef));
-				int e = tri ? exp : 0;
+				int e = tri ? (exp == 0 ? 1: exp) : 0;
 				terms[e] = c;
 				coef = 0;
 				exp = 0;
@@ -76,12 +76,12 @@ public:
 					o = " -";
 				}
 			}
-			if(it->second == 1 || it->second == -1)
+			if((it->second == 1 || it->second == -1) && it->first != 0)
 				c = "";
 			else{
 				char str[15];
 				sprintf(str, "%d", it->second);
-				c = string(str);
+				c = string(str) + "*";
 			}
 			string e = "";
 			if(it->first == 0)
@@ -96,7 +96,7 @@ public:
 			}
 			cout << o << c << e;
 		}
-		cout << endl;
+		//cout << endl;
 	}
 	Polynomial Add(Polynomial b){
 		map<int,int> mapb = b.terms;
@@ -143,20 +143,19 @@ public:
 	Polynomial Div(Polynomial b){
 		map<int,int> mapb = b.terms;
 		map<int,int> qTerm;
-		while (terms[terms.size() - 1] != 0){
-			map<int,int>::reverse_iterator it;
-			for(it=terms.rbegin(); it!=terms.rend(); ++it){
-				if(it->second == 0)continue;
-				int c = it->second / mapb.rbegin()->second;
-				int e = it->first - mapb.rbegin()->first;
-				qTerm[e] = c;
-				map<int,int>::reverse_iterator rit;
-				for(rit=mapb.rbegin(); rit!=mapb.rend(); ++rit){
-					if(terms[rit->first + e]){
-						terms[rit->first + e] = terms[rit->first + e] - c * rit->second;
-					}else{
-						terms[rit->first + e] = - c * rit->second;
-					}
+		
+		map<int,int>::reverse_iterator it;
+		for(it=terms.rbegin(); it!=terms.rend(); ++it){
+			if(it->second == 0)continue;
+			int c = it->second / mapb.rbegin()->second;
+			int e = it->first - mapb.rbegin()->first;
+			qTerm[e] = c;
+			map<int,int>::reverse_iterator rit;
+			for(rit=mapb.rbegin(); rit!=mapb.rend(); ++rit){
+				if(terms[rit->first + e]){
+					terms[rit->first + e] = terms[rit->first + e] - c * rit->second;
+				}else{
+					terms[rit->first + e] = - c * rit->second;
 				}
 			}
 		}
@@ -169,7 +168,7 @@ public:
 int main()
 {
 	string s;
-  ifstream myfile( "t5.txt" );
+  ifstream myfile( "t2.txt" );
   if (myfile)  // same as: if (myfile.good())
     {
 		  Polynomial b[2];
